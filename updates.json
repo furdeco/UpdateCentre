@@ -1,0 +1,14 @@
+
+[
+  {
+    "id": "sample-delivery-booking",
+    "title": "Delivery booking must be made in advance",
+    "category": "Process",
+    "effectiveDate": "2026-10-25",
+    "body": "From today onwards, all deliveries must be booked in advance. Please follow the updated booking procedure before arranging a delivery.",
+    "author": "Operations Team",
+    "status": "published",
+    "createdAt": "2026-10-25T00:00:00.000Z",
+    "updatedAt": "2026-10-25T00:00:00.000Z"
+  }
+]
