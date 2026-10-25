@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#f5f7fb">
+<title>Update Centre</title>
+<style>
+:root{--bg:#f5f7fb;--panel:#fff;--text:#172033;--muted:#68738a;--line:#e4e8f0;--accent:#2458d3;--accent2:#eaf0ff;--green:#147d54;--greenbg:#e8f7ef;--amber:#946200;--amberbg:#fff4d6;--red:#b42318;--shadow:0 12px 32px rgba(27,43,78,.07)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}button,input,textarea,select{font:inherit}button{cursor:pointer}.topbar{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}.topinner{max-width:1120px;margin:auto;padding:15px 22px;display:flex;align-items:center;gap:14px}.brandmark{width:42px;height:42px;border-radius:13px;background:var(--accent);display:grid;place-items:center;color:white;font-weight:800;font-size:20px;box-shadow:0 5px 14px #2458d333}.brand h1{font-size:19px;margin:0;letter-spacing:-.4px}.brand p{font-size:12px;color:var(--muted);margin:1px 0 0}.topactions{margin-left:auto;display:flex;gap:9px;align-items:center}.container{max-width:1120px;margin:32px auto;padding:0 22px 50px}.hero{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin-bottom:24px}.eyebrow{text-transform:uppercase;letter-spacing:1.4px;font-size:11px;font-weight:800;color:var(--accent)}h2{font-size:30px;line-height:1.2;letter-spacing:-.8px;margin:7px 0 8px}.sub{color:var(--muted);margin:0;max-width:660px}.btn{border:1px solid var(--line);background:white;color:var(--text);padding:9px 13px;border-radius:10px;font-weight:650;display:inline-flex;align-items:center;justify-content:center;gap:7px;transition:.15s}.btn:hover{transform:translateY(-1px);box-shadow:0 5px 13px #1720330d}.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}.btn.danger{color:var(--red);border-color:#f2d4d1;background:#fff}.btn.small{font-size:12px;padding:6px 9px}.btn:disabled{opacity:.5;cursor:not-allowed;transform:none}.searchrow{display:flex;gap:10px;margin-bottom:18px}.searchwrap{flex:1;position:relative}.searchwrap span{position:absolute;left:14px;top:10px;color:var(--muted)}input,textarea,select{width:100%;border:1px solid #dce2ed;border-radius:10px;background:#fff;color:var(--text);padding:11px 12px;outline:none}input:focus,textarea:focus,select:focus{border-color:#7b9df4;box-shadow:0 0 0 3px #2458d315}.searchwrap input{padding-left:40px}.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}.filter{border:1px solid var(--line);border-radius:999px;background:#fff;padding:7px 12px;color:var(--muted);font-size:13px;font-weight:650}.filter.active{background:var(--accent2);border-color:#c9d7ff;color:var(--accent)}.summary{display:flex;align-items:center;justify-content:space-between;margin:0 0 14px;color:var(--muted);font-size:13px}.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}.update-card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 4px 14px #17203304;min-width:0}.cardtop{display:flex;align-items:center;gap:9px;margin-bottom:12px}.pill{font-size:11px;font-weight:800;letter-spacing:.2px;border-radius:999px;padding:5px 9px;background:var(--accent2);color:var(--accent)}.pill.policy{background:var(--greenbg);color:var(--green)}.pill.important{background:var(--amberbg);color:var(--amber)}.date{color:var(--muted);font-size:12px;margin-left:auto}.update-card h3{font-size:18px;line-height:1.35;margin:0 0 9px;letter-spacing:-.2px}.bodytext{white-space:pre-wrap;color:#4f5b70;font-size:14px;overflow-wrap:anywhere}.cardbottom{display:flex;align-items:center;justify-content:space-between;gap:10px;border-top:1px solid var(--line);padding-top:13px;margin-top:17px;color:var(--muted);font-size:12px}.statusdot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#21a366;margin-right:6px}.empty{background:#fff;border:1px dashed #cfd6e3;border-radius:16px;padding:45px 20px;text-align:center;color:var(--muted);grid-column:1/-1}.empty strong{display:block;color:var(--text);font-size:16px;margin-bottom:5px}.footer{margin-top:32px;padding-top:18px;border-top:1px solid var(--line);font-size:12px;color:var(--muted);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}.overlay{position:fixed;inset:0;background:#11182780;z-index:20;display:none;align-items:center;justify-content:center;padding:18px;overflow:auto}.overlay.open{display:flex}.modal{background:#fff;width:min(760px,100%);max-height:94vh;overflow:auto;border-radius:18px;box-shadow:0 25px 80px #0003}.modalhead{padding:20px 22px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:12px}.modalhead h3{margin:0;font-size:19px}.modalbody{padding:22px}.modalfoot{padding:15px 22px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:15px}.field{display:flex;flex-direction:column;gap:6px}.field.full{grid-column:1/-1}.field label{font-size:12px;font-weight:800;color:#4b566b}.field textarea{min-height:140px;resize:vertical}.hint{font-size:12px;color:var(--muted);margin:2px 0 0}.notice{border-radius:11px;padding:12px 14px;font-size:13px;margin-bottom:16px}.notice.info{background:#eef4ff;color:#284c9c}.notice.warn{background:var(--amberbg);color:#795500}.notice.error{background:#fff0ef;color:var(--red)}.notice.success{background:var(--greenbg);color:var(--green)}.loginbox{width:min(430px,100%);padding:28px}.loginbox h2{font-size:25px;margin-top:0}.loginbox .field{margin-top:14px}.loginbox .btn{width:100%;margin-top:18px}.adminbar{display:none;background:#edf3ff;border-bottom:1px solid #d8e4ff}.adminbar.show{display:block}.admininner{max-width:1120px;margin:auto;padding:10px 22px;display:flex;align-items:center;gap:9px;flex-wrap:wrap;font-size:13px;color:#244a9b}.admininner .spacer{flex:1}.hidden{display:none!important}.publishgrid{display:grid;grid-template-columns:1fr 1fr;gap:15px}.divider{border:0;border-top:1px solid var(--line);margin:22px 0}.iconbtn{border:0;background:transparent;color:var(--muted);font-size:22px;padding:0 4px}.repo-fields{display:grid;grid-template-columns:1fr 1fr;gap:12px}.repo-fields .full{grid-column:1/-1}.admin-list{display:flex;flex-direction:column;gap:9px}.admin-item{border:1px solid var(--line);border-radius:11px;padding:12px;display:flex;align-items:center;gap:12px}.admin-item .info{min-width:0;flex:1}.admin-item strong{display:block;overflow-wrap:anywhere}.admin-item small{color:var(--muted)}.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:#182338;color:#fff;padding:11px 16px;border-radius:12px;box-shadow:var(--shadow);z-index:50;display:none;max-width:calc(100% - 30px);font-size:13px}.toast.show{display:block}.loading{opacity:.65;pointer-events:none}
+@media(max-width:700px){.container{margin-top:23px;padding:0 15px 35px}.topinner{padding:12px 15px}.hero{align-items:flex-start;flex-direction:column}.hero .btn{align-self:stretch}.cards{grid-template-columns:1fr}.formgrid,.repo-fields,.publishgrid{grid-template-columns:1fr}.field.full,.repo-fields .full{grid-column:auto}h2{font-size:26px}.topactions .label{display:none}.update-card{padding:17px}.modalbody{padding:17px}.modalhead{padding:17px}.modalfoot{padding:13px 17px}}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="topinner">
+    <div class="brandmark">U</div>
+    <div class="brand"><h1>Update Centre</h1><p>Process knowledge & operational announcements</p></div>
+    <div class="topactions"><button class="btn" id="refreshBtn" title="Reload updates">↻ <span class="label">Refresh</span></button><button class="btn primary" id="loginOpenBtn">♙ <span class="label">Admin Login</span></button></div>
+  </div>
+</header>
+<div class="adminbar" id="adminbar"><div class="admininner"><strong>Admin mode enabled</strong><span>·</span><span id="adminEmailLabel"></span><span class="spacer"></span><button class="btn small" id="manageBtn">Manage updates</button><button class="btn small" id="settingsBtn">GitHub publishing</button><button class="btn small" id="logoutBtn">Log out</button></div></div>
+<main class="container">
+  <section class="hero"><div><div class="eyebrow">Knowledge at a glance</div><h2>Latest Updates</h2><p class="sub">Find the latest policy changes, process instructions, and important operational notices in one place.</p></div><button class="btn primary hidden" id="newUpdateBtn">＋ Create update</button></section>
+  <div class="searchrow"><div class="searchwrap"><span>⌕</span><input id="searchInput" type="search" placeholder="Search updates, keywords or process..." autocomplete="off"></div><select id="sortSelect" style="width:auto;min-width:150px"><option value="newest">Newest first</option><option value="oldest">Oldest first</option></select></div>
+  <div class="filters" id="filters"><button class="filter active" data-category="All">All updates</button><button class="filter" data-category="Policy">Policy</button><button class="filter" data-category="Process">Process</button><button class="filter" data-category="Important">Important</button><button class="filter" data-category="General">General</button></div>
+  <div class="summary"><span id="resultCount">Loading updates…</span><span id="sourceLabel">Public updates</span></div>
+  <section class="cards" id="updatesGrid"></section>
+  <div class="footer"><span>Update Centre · Keep up with the latest process changes.</span><span id="lastUpdated">Updated when published</span></div>
+</main>
+
+<!-- Admin login -->
+<div class="overlay" id="loginModal" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
+ <div class="modal loginbox"><div style="display:flex;justify-content:space-between;align-items:center"><div class="brandmark">U</div><button class="iconbtn" data-close="loginModal" aria-label="Close">×</button></div><h2 id="loginTitle" style="margin-top:20px">Admin login</h2><p class="sub">Sign in to create and manage process updates.</p><div id="loginNotice"></div>
+  <form id="loginForm"><div class="field"><label for="loginEmail">Admin email</label><input id="loginEmail" type="email" required placeholder="admin@example.com" autocomplete="username"></div><div class="field"><label for="loginPassword">Password</label><input id="loginPassword" type="password" required placeholder="Enter password" autocomplete="current-password"></div><button class="btn primary" type="submit">Sign in to admin panel →</button></form>
+  <p class="hint" style="margin-top:15px">Demo credentials are configured in the HTML source. This is a convenience gate, not secure authentication—anyone who can inspect the public file may discover them.</p>
+ </div>
+</div>
+
+<!-- Create/edit modal -->
+<div class="overlay" id="editorModal" role="dialog" aria-modal="true" aria-labelledby="editorTitle">
+ <div class="modal"><div class="modalhead"><h3 id="editorTitle">Create update</h3><button class="iconbtn" data-close="editorModal" aria-label="Close">×</button></div><form id="editorForm"><div class="modalbody"><div id="editorNotice"></div><input type="hidden" id="editId"><div class="formgrid">
+  <div class="field full"><label for="updateTitle">Update title *</label><input id="updateTitle" maxlength="120" required placeholder="e.g. Delivery booking must be made in advance"></div>
+  <div class="field"><label for="updateCategory">Category</label><select id="updateCategory"><option>Process</option><option>Policy</option><option>Important</option><option>General</option></select></div>
+  <div class="field"><label for="effectiveDate">Effective date</label><input id="effectiveDate" type="date"></div>
+  <div class="field full"><label for="updateBody">Update details *</label><textarea id="updateBody" required maxlength="10000" placeholder="Explain what has changed, when it applies, and what action the team should take."></textarea><p class="hint">Keep the wording clear and actionable. Plain text is supported.</p></div>
+  <div class="field"><label for="updateStatus">Publication status</label><select id="updateStatus"><option value="published">Published</option><option value="draft">Draft (admin only)</option></select></div>
+  <div class="field"><label for="updateAuthor">Author / team (optional)</label><input id="updateAuthor" maxlength="80" placeholder="e.g. Operations Team"></div>
+ </div></div><div class="modalfoot"><button type="button" class="btn" data-close="editorModal">Cancel</button><button class="btn primary" type="submit" id="saveUpdateBtn">Save update</button></div></form></div>
+</div>
+
+<!-- Manage updates -->
+<div class="overlay" id="manageModal" role="dialog" aria-modal="true" aria-labelledby="manageTitle">
+ <div class="modal"><div class="modalhead"><h3 id="manageTitle">Manage updates</h3><button class="iconbtn" data-close="manageModal" aria-label="Close">×</button></div><div class="modalbody"><div id="manageNotice"></div><div class="notice info">Updates are stored in the GitHub repository when publishing is configured. Without GitHub publishing, changes are only saved in this browser.</div><div class="admin-list" id="adminList"></div></div><div class="modalfoot"><button class="btn" data-close="manageModal">Close</button><button class="btn primary" id="manageNewBtn">＋ Create update</button></div></div>
+</div>
+
+<!-- GitHub settings -->
+<div class="overlay" id="settingsModal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+ <div class="modal"><div class="modalhead"><h3 id="settingsTitle">GitHub publishing setup</h3><button class="iconbtn" data-close="settingsModal" aria-label="Close">×</button></div><div class="modalbody"><div id="settingsNotice"></div>
+  <div class="notice warn"><strong>Token safety:</strong> do not embed a GitHub token in this HTML file. Anyone can inspect a public file. Enter your token only when you administer the site; this page keeps it in memory for this session and does not write it into the repository.</div>
+  <p class="sub" style="margin-bottom:16px">Connect this page to the repository that hosts your GitHub Pages site. Publishing writes an <code>updates.json</code> file to the repository.</p>
+  <div class="repo-fields">
+   <div class="field"><label for="ghOwner">GitHub username / owner *</label><input id="ghOwner" placeholder="your-github-username"></div>
+   <div class="field"><label for="ghRepo">Repository name *</label><input id="ghRepo" placeholder="your-repository"></div>
+   <div class="field"><label for="ghBranch">Branch</label><input id="ghBranch" value="main" placeholder="main"></div>
+   <div class="field"><label for="ghPath">JSON file path</label><input id="ghPath" value="updates.json" placeholder="updates.json"></div>
+   <div class="field full"><label for="ghToken">Fine-grained personal access token *</label><input id="ghToken" type="password" placeholder="github_pat_…" autocomplete="off"><p class="hint">Grant access only to this repository, with Contents: Read and write. A fine-grained token is preferable to a broad classic token.</p></div>
+  </div>
+  <div class="publishgrid" style="margin-top:16px"><button class="btn" id="loadGithubBtn">↓ Load from GitHub</button><button class="btn primary" id="publishGithubBtn">↑ Publish all updates</button></div>
+  <hr class="divider"><p class="hint">After connecting, use “Publish” in the editor or “Publish all updates” here. GitHub Pages may take a short time to rebuild after a commit. This standalone page uses the GitHub API directly from your browser, so the repository's CORS/API availability and your token permissions apply.</p>
+ </div><div class="modalfoot"><button class="btn" data-close="settingsModal">Close</button><button class="btn primary" id="testGithubBtn">Test connection</button></div></div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script>
+/* ===================== CONFIGURATION =====================
+   Convenience login only. This is NOT secure authentication:
+   credentials in a public HTML file can be viewed by anyone.
+   Change these demo values before use.
+========================================================= */
+const ADMIN_EMAIL = "admin@example.com";
+const ADMIN_PASSWORD = "UpdateCentre123!";
+const STORAGE_KEY = "updateCentre.localUpdates.v1";
+const CONFIG_KEY = "updateCentre.githubConfig.v1";
+const SESSION_KEY = "updateCentre.adminSession.v1";
+
+/* A starter announcement is shown only if no local or remote data exists. */
+const starterUpdates = [{
+ id:"sample-delivery-booking",
+ title:"Delivery booking must be made in advance",
+ category:"Process",
+ effectiveDate:new Date().toISOString().slice(0,10),
+ body:"From today onwards, all deliveries must be booked in advance. Please follow the updated booking procedure before arranging a delivery.",
+ author:"Operations Team",
+ status:"published",
+ createdAt:new Date().toISOString(),
+ updatedAt:new Date().toISOString()
+}];
+
+let updates = [];
+let activeCategory = "All";
+let adminSignedIn = sessionStorage.getItem(SESSION_KEY) === "yes";
+let githubToken = "";
+let githubConfig = {owner:"",repo:"",branch:"main",path:"updates.json"};
+let remoteSha = null;
+let dataSource = "sample";
+const $ = id => document.getElementById(id);
+const esc = value => String(value ?? "").replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
+const niceDate = value => { if(!value)return "Date not set"; const d=new Date(value+"T00:00:00"); return isNaN(d) ? value : d.toLocaleDateString(undefined,{day:"numeric",month:"short",year:"numeric"}); };
+const catClass = category => category==="Policy"?"policy":category==="Important"?"important":"";
+function showToast(message){$("toast").textContent=message;$("toast").classList.add("show");clearTimeout(showToast.timer);showToast.timer=setTimeout(()=>$("toast").classList.remove("show"),3200);}
+function openModal(id){$(id).classList.add("open");}
+function closeModal(id){$(id).classList.remove("open");}
+function loadLocal(){
+ try { const raw=localStorage.getItem(STORAGE_KEY); if(raw){const parsed=JSON.parse(raw);if(Array.isArray(parsed)){updates=parsed;dataSource="local";return;}} }catch(e){}
+ updates=starterUpdates.map(x=>({...x})); dataSource="sample";
+}
+function saveLocal(){localStorage.setItem(STORAGE_KEY,JSON.stringify(updates));}
+function render(){
+ const query=$("searchInput").value.trim().toLowerCase();
+ let list=updates.filter(u=>(adminSignedIn||u.status!=="draft")&&(activeCategory==="All"||u.category===activeCategory));
+ if(query)list=list.filter(u=>[u.title,u.body,u.category,u.author].join(" ").toLowerCase().includes(query));
+ list.sort((a,b)=>{const da=new Date(a.updatedAt||a.createdAt||a.effectiveDate||0).getTime(),db=new Date(b.updatedAt||b.createdAt||b.effectiveDate||0).getTime();return $("sortSelect").value==="oldest"?da-db:db-da;});
+ $("resultCount").textContent=`${list.length} update${list.length===1?"":"s"} found`;
+ $("sourceLabel").textContent=dataSource==="github"?"Synced from GitHub":dataSource==="local"?"Saved in this browser":"Sample preview";
+ $("lastUpdated").textContent=dataSource==="github"?"Content loaded from GitHub":dataSource==="local"?"Local browser copy":"Publish updates to make them public";
+ const grid=$("updatesGrid");
+ if(!list.length){grid.innerHTML='<div class="empty"><strong>No updates found</strong>Try another search or category filter.</div>';return;}
+ grid.innerHTML=list.map(u=>`<article class="update-card"><div class="cardtop"><span class="pill ${catClass(u.category)}">${esc(u.category||"General")}</span><span class="date">${esc(niceDate(u.effectiveDate||u.createdAt?.slice(0,10)))}</span></div><h3>${esc(u.title)}</h3><div class="bodytext">${esc(u.body)}</div><div class="cardbottom"><span><i class="statusdot"></i>${esc(u.author||"Operations Team")}</span>${adminSignedIn?`<span><button class="btn small" data-edit="${esc(u.id)}">Edit</button> <button class="btn small danger" data-delete="${esc(u.id)}">Delete</button></span>`:"<span>Update Centre</span>"}</div></article>`).join("");
+}
+function updateAdminUI(){
+ $("loginOpenBtn").classList.toggle("hidden",adminSignedIn);
+ $("adminbar").classList.toggle("show",adminSignedIn);
+ $("newUpdateBtn").classList.toggle("hidden",!adminSignedIn);
+ $("adminEmailLabel").textContent=adminSignedIn?ADMIN_EMAIL:"";
+ render();
+}
+function renderAdminList(){
+ const list=$("adminList");
+ if(!updates.length){list.innerHTML='<div class="empty"><strong>No updates yet</strong>Create your first announcement.</div>';return;}
+ list.innerHTML=updates.slice().sort((a,b)=>(b.updatedAt||"").localeCompare(a.updatedAt||"")).map(u=>`<div class="admin-item"><div class="info"><strong>${esc(u.title)}</strong><small>${esc(u.category)} · ${u.status==="draft"?"Draft":"Published"} · ${esc(niceDate(u.effectiveDate))}</small></div><button class="btn small" data-edit="${esc(u.id)}">Edit</button><button class="btn small danger" data-delete="${esc(u.id)}">Delete</button></div>`).join("");
+}
+function startNewUpdate(){
+ $("editorTitle").textContent="Create update";$("editId").value="";
+ $("updateTitle").value="";$("updateCategory").value="Process";$("effectiveDate").value=new Date().toISOString().slice(0,10);
+ $("updateBody").value="";$("updateStatus").value="published";$("updateAuthor").value="Operations Team";$("editorNotice").innerHTML="";
+ $("saveUpdateBtn").textContent=githubToken?"Save & publish":"Save update";openModal("editorModal");
+}
+function editUpdate(id){
+ const u=updates.find(x=>x.id===id);if(!u)return;
+ $("editorTitle").textContent="Edit update";$("editId").value=u.id;$("updateTitle").value=u.title||"";$("updateCategory").value=u.category||"General";
+ $("effectiveDate").value=u.effectiveDate||"";$("updateBody").value=u.body||"";$("updateStatus").value=u.status||"published";$("updateAuthor").value=u.author||"";
+ $("editorNotice").innerHTML="";$("saveUpdateBtn").textContent=githubToken?"Save & publish":"Save update";closeModal("manageModal");openModal("editorModal");
+}
+async function deleteUpdate(id){
+ const u=updates.find(x=>x.id===id);if(!u)return;
+ if(!confirm(`Delete "${u.title}"? This will be reflected publicly after publishing.`))return;
+ updates=updates.filter(x=>x.id!==id);saveLocal();render();renderAdminList();
+ if(githubToken){try{await publishToGithub();showToast("Update deleted and published to GitHub.");}catch(e){showToast("Deleted locally, but GitHub publish failed: "+e.message);}}
+ else showToast("Deleted in this browser. Configure GitHub publishing to update the public site.");
+}
+function readConfigInputs(){
+ return {owner:$("ghOwner").value.trim(),repo:$("ghRepo").value.trim(),branch:$("ghBranch").value.trim()||"main",path:$("ghPath").value.trim()||"updates.json"};
+}
+function fillConfigInputs(){
+ $("ghOwner").value=githubConfig.owner||"";$("ghRepo").value=githubConfig.repo||"";$("ghBranch").value=githubConfig.branch||"main";$("ghPath").value=githubConfig.path||"updates.json";
+}
+function saveConfig(){
+ githubConfig=readConfigInputs();
+ // Only repository coordinates are persisted. Never store the access token.
+ localStorage.setItem(CONFIG_KEY,JSON.stringify(githubConfig));
+}
+function githubHeaders(){return {"Accept":"application/vnd.github+json","Authorization":"Bearer "+githubToken,"X-GitHub-Api-Version":"2022-11-28","Content-Type":"application/json"};}
+function validateGithub(){saveConfig();if(!githubConfig.owner||!githubConfig.repo||!githubToken)throw new Error("Enter the repository owner, repository name, and a GitHub token.");}
+async function githubRequest(url,options={}){
+ const response=await fetch(url,{...options,headers:{...githubHeaders(),...(options.headers||{})}});
+ const data=await response.json().catch(()=>({}));
+ if(!response.ok)throw new Error(data.message||`GitHub API error (${response.status})`);
+ return data;
+}
+function contentUrl(){return `https://api.github.com/repos/${encodeURIComponent(githubConfig.owner)}/${encodeURIComponent(githubConfig.repo)}/contents/${githubConfig.path.split("/").map(encodeURIComponent).join("/")}`;}
+async function testGithub(){
+ validateGithub();
+ const data=await githubRequest(`https://api.github.com/repos/${encodeURIComponent(githubConfig.owner)}/${encodeURIComponent(githubConfig.repo)}`);
+ return data;
+}
+async function loadFromGithub(){
+ validateGithub();
+ const url=contentUrl()+`?ref=${encodeURIComponent(githubConfig.branch)}`;
+ const data=await githubRequest(url);
+ if(!data.content)throw new Error("The file was found but no content was returned.");
+ let decoded=decodeURIComponent(escape(atob(data.content.replace(/\n/g,""))));
+ const parsed=JSON.parse(decoded);
+ if(!Array.isArray(parsed))throw new Error("updates.json must contain a JSON array.");
+ updates=parsed;remoteSha=data.sha;dataSource="github";saveLocal();render();renderAdminList();
+}
+async function publishToGithub(){
+ validateGithub();
+ const url=contentUrl();
+ let sha=remoteSha;
+ if(!sha){
+  try{const existing=await githubRequest(url+`?ref=${encodeURIComponent(githubConfig.branch)}`);sha=existing.sha;}
+  catch(e){if(!String(e.message).toLowerCase().includes("not found"))throw e;}
+ }
+ const json=JSON.stringify(updates,null,2);
+ const bytes=unescape(encodeURIComponent(json));
+ let binary="";for(let i=0;i<bytes.length;i++)binary+=String.fromCharCode(bytes.charCodeAt(i));
+ const body={message:"Update Update Centre announcements",content:btoa(binary),branch:githubConfig.branch};
+ if(sha)body.sha=sha;
+ const result=await githubRequest(url,{method:"PUT",body:JSON.stringify(body)});
+ remoteSha=result.content?.sha||null;dataSource="github";saveLocal();render();
+ return result;
+}
+function settingsNotice(type,msg){$("settingsNotice").innerHTML=`<div class="notice ${type}">${esc(msg)}</div>`;}
+function editorNotice(type,msg){$("editorNotice").innerHTML=`<div class="notice ${type}">${esc(msg)}</div>`;}
+function setBusy(button,busy,text){button.disabled=busy;if(busy){button.dataset.oldText=button.textContent;button.textContent=text||"Working…";}else{button.textContent=button.dataset.oldText||button.textContent;}}
+async function refreshPublic(){
+ // On GitHub Pages, read the public JSON beside this HTML file first.
+ // This works for every visitor without requiring per-browser setup.
+ try{
+  const res=await fetch("./updates.json",{cache:"no-store"});
+  if(res.ok){const parsed=await res.json();if(Array.isArray(parsed)){updates=parsed;dataSource="github";saveLocal();render();return;}}
+ }catch(e){}
+ // Optional fallback for a separately configured repository/path.
+ const cfg=githubConfig;
+ if(cfg.owner&&cfg.repo){
+  try{
+   const url=`https://raw.githubusercontent.com/${encodeURIComponent(cfg.owner)}/${encodeURIComponent(cfg.repo)}/${encodeURIComponent(cfg.branch||"main")}/${(cfg.path||"updates.json").split("/").map(encodeURIComponent).join("/")}`;
+   const res=await fetch(url,{cache:"no-store"});
+   if(res.ok){const parsed=await res.json();if(Array.isArray(parsed)){updates=parsed;dataSource="github";saveLocal();render();return;}}
+  }catch(e){}
+ }
+ loadLocal();render();
+}
+document.addEventListener("click",async e=>{
+ const close=e.target.closest("[data-close]");if(close){closeModal(close.dataset.close);return;}
+ const edit=e.target.closest("[data-edit]");if(edit){editUpdate(edit.dataset.edit);return;}
+ const del=e.target.closest("[data-delete]");if(del){await deleteUpdate(del.dataset.delete);return;}
+ const filter=e.target.closest("[data-category]");if(filter){activeCategory=filter.dataset.category;document.querySelectorAll(".filter").forEach(b=>b.classList.toggle("active",b===filter));render();}
+});
+document.querySelectorAll(".overlay").forEach(el=>el.addEventListener("click",e=>{if(e.target===el)closeModal(el.id);}));
+$("loginOpenBtn").addEventListener("click",()=>{ $("loginNotice").innerHTML="";$("loginForm").reset();openModal("loginModal");});
+$("loginForm").addEventListener("submit",e=>{
+ e.preventDefault();
+ if($("loginEmail").value.trim().toLowerCase()===ADMIN_EMAIL.toLowerCase()&&$("loginPassword").value===ADMIN_PASSWORD){
+  adminSignedIn=true;sessionStorage.setItem(SESSION_KEY,"yes");closeModal("loginModal");updateAdminUI();showToast("Signed in to the admin panel.");return;
+ }
+ $("loginNotice").innerHTML='<div class="notice error">Email or password is incorrect.</div>';
+});
+$("logoutBtn").addEventListener("click",()=>{adminSignedIn=false;sessionStorage.removeItem(SESSION_KEY);githubToken="";$("ghToken").value="";updateAdminUI();showToast("You have been logged out.");});
+$("newUpdateBtn").addEventListener("click",startNewUpdate);
+$("manageNewBtn").addEventListener("click",()=>{closeModal("manageModal");startNewUpdate();});
+$("manageBtn").addEventListener("click",()=>{renderAdminList();$("manageNotice").innerHTML="";openModal("manageModal");});
+$("settingsBtn").addEventListener("click",()=>{fillConfigInputs();$("ghToken").value=githubToken;settingsNotice("info","Enter your GitHub token for this session, then test or publish.");openModal("settingsModal");});
+$("editorForm").addEventListener("submit",async e=>{
+ e.preventDefault();
+ if(!adminSignedIn){showToast("Please sign in first.");return;}
+ const id=$("editId").value||("upd-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,7));
+ const existing=updates.find(u=>u.id===id);
+ const item={id,title:$("updateTitle").value.trim(),category:$("updateCategory").value,effectiveDate:$("effectiveDate").value,body:$("updateBody").value.trim(),author:$("updateAuthor").value.trim(),status:$("updateStatus").value,createdAt:existing?.createdAt||new Date().toISOString(),updatedAt:new Date().toISOString()};
+ if(!item.title||!item.body){editorNotice("error","Please add a title and update details.");return;}
+ if(existing)updates=updates.map(u=>u.id===id?item:u);else updates.push(item);
+ saveLocal();render();renderAdminList();
+ if(githubToken){
+  const btn=$("saveUpdateBtn");setBusy(btn,true,"Publishing…");
+  try{await publishToGithub();closeModal("editorModal");showToast("Update published to GitHub.");}
+  catch(err){editorNotice("error","Saved in this browser, but GitHub publishing failed: "+err.message);showToast("GitHub publish failed.");}
+  finally{setBusy(btn,false);}
+ }else{
+  closeModal("editorModal");
+  showToast("Saved in this browser only. Configure GitHub publishing to make it public.");
+ }
+});
+$("testGithubBtn").addEventListener("click",async()=>{
+ const btn=$("testGithubBtn");githubToken=$("ghToken").value.trim();setBusy(btn,true,"Testing…");
+ try{const repo=await testGithub();settingsNotice("success",`Connected to ${repo.full_name}. Token permissions and repository access appear to be working.`);}
+ catch(e){settingsNotice("error",e.message); }
+ finally{setBusy(btn,false);}
+});
+$("loadGithubBtn").addEventListener("click",async()=>{
+ const btn=$("loadGithubBtn");githubToken=$("ghToken").value.trim();setBusy(btn,true,"Loading…");
+ try{await loadFromGithub();settingsNotice("success","Updates loaded from GitHub successfully.");showToast("Loaded latest updates from GitHub.");}
+ catch(e){settingsNotice("error",e.message);}
+ finally{setBusy(btn,false);}
+});
+$("publishGithubBtn").addEventListener("click",async()=>{
+ const btn=$("publishGithubBtn");githubToken=$("ghToken").value.trim();setBusy(btn,true,"Publishing…");
+ try{await publishToGithub();settingsNotice("success","All updates were committed to GitHub. GitHub Pages may take a short time to redeploy.");showToast("Published updates to GitHub.");}
+ catch(e){settingsNotice("error",e.message);}
+ finally{setBusy(btn,false);}
+});
+$("searchInput").addEventListener("input",render);$("sortSelect").addEventListener("change",render);
+$("refreshBtn").addEventListener("click",async()=>{await refreshPublic();showToast("Updates refreshed.");});
+(function init(){
+ try{const c=JSON.parse(localStorage.getItem(CONFIG_KEY)||"{}");githubConfig={...githubConfig,...c};}catch(e){}
+ fillConfigInputs();
+ // If a repository was configured earlier, attempt a public read without needing a token.
+ refreshPublic().then(()=>updateAdminUI());
+})();
+</script>
+</body>
+</html>
