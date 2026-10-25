@@ -1,0 +1,414 @@
+
+/**
+ * Furdeco Update Centre — Cloudflare Worker
+ * Storage: GitHub repository (updates.json)
+ *
+ * Required Worker variables/secrets:
+ * ADMIN_EMAIL
+ * ADMIN_PASSWORD
+ * SESSION_SECRET
+ * GITHUB_TOKEN
+ * GITHUB_OWNER = furdeco
+ * GITHUB_REPO = UpdateCentre
+ * GITHUB_BRANCH = main
+ * GITHUB_FILE_PATH = updates.json
+ *
+ * Optional variable:
+ * ALLOWED_ORIGIN = https://furdeco.github.io
+ *
+ * Routes:
+ * GET  /health
+ * GET  /api/updates
+ * POST /api/admin/login
+ * POST /api/admin/updates
+ */
+
+const CATEGORIES = new Set([
+  "Seller Updates",
+  "Policy Changes",
+  "Delivery Crew",
+  "Customer Care",
+  "Operations"
+]);
+
+const TOKEN_TTL_SECONDS = 4 * 60 * 60;
+
+export default {
+  async fetch(request, env) {
+    const url = new URL(request.url);
+    const origin = request.headers.get("Origin") || "";
+    const headers = corsHeaders(origin, env);
+
+    if (request.method === "OPTIONS") {
+      return new Response(null, { status: 204, headers });
+    }
+
+    try {
+      if (url.pathname === "/health" && request.method === "GET") {
+        return json({ ok: true }, 200, headers);
+      }
+
+      if (url.pathname === "/api/updates" && request.method === "GET") {
+        const updates = await readUpdates(env);
+        return json({ updates }, 200, headers);
+      }
+
+      if (url.pathname === "/api/admin/login" && request.method === "POST") {
+        if (!env.ADMIN_EMAIL || !env.ADMIN_PASSWORD ||
+            !env.SESSION_SECRET) {
+          return json({
+            error: "Admin authentication is not configured."
+          }, 500, headers);
+        }
+
+        const body = await readJson(request);
+        const email = String(body.email || "").trim();
+        const password = String(body.password || "");
+
+        if (
+          !safeEqual(email.toLowerCase(), env.ADMIN_EMAIL.trim().toLowerCase()) ||
+          !safeEqual(password, env.ADMIN_PASSWORD)
+        ) {
+          return json({
+            error: "Invalid email or password."
+          }, 401, headers);
+        }
+
+        const token = await createToken(env.SESSION_SECRET);
+
+        return json({
+          token,
+          expiresIn: TOKEN_TTL_SECONDS
+        }, 200, headers);
+      }
+
+      if (url.pathname === "/api/admin/updates" &&
+          request.method === "POST") {
+        if (!env.SESSION_SECRET) {
+          return json({
+            error: "Session authentication is not configured."
+          }, 500, headers);
+        }
+
+        const authorization =
+          request.headers.get("Authorization") || "";
+        const token = authorization.replace(/^Bearer\s+/i, "");
+
+        if (!token || !(await verifyToken(token, env.SESSION_SECRET))) {
+          return json({
+            error: "Your admin session has expired. Please sign in again."
+          }, 401, headers);
+        }
+
+        const body = await readJson(request);
+        const subject = String(body.subject || "").trim();
+        const category = String(body.category || "").trim();
+        const content = String(body.body || "").trim();
+
+        if (!subject || subject.length > 180) {
+          return json({
+            error: "Subject is required (maximum 180 characters)."
+          }, 400, headers);
+        }
+
+        if (!CATEGORIES.has(category)) {
+          return json({
+            error: "Please select a valid update category."
+          }, 400, headers);
+        }
+
+        if (!content || content.length > 20000) {
+          return json({
+            error: "Update body is required (maximum 20,000 characters)."
+          }, 400, headers);
+        }
+
+        const updates = await readUpdates(env);
+
+        const update = {
+          id: crypto.randomUUID(),
+          subject,
+          category,
+          body: content,
+          publishedAt: new Date().toISOString()
+        };
+
+        updates.unshift(update);
+
+        // Prevent accidental unlimited growth of updates.json.
+        const limitedUpdates = updates.slice(0, 500);
+
+        await writeUpdates(env, limitedUpdates);
+
+        return json({
+          ok: true,
+          update
+        }, 201, headers);
+      }
+
+      return json({ error: "Not found." }, 404, headers);
+
+    } catch (error) {
+      console.error("Update Centre Worker error:", error);
+
+      if (error instanceof SyntaxError) {
+        return json({
+          error: "Request body must contain valid JSON."
+        }, 400, headers);
+      }
+
+      return json({
+        error: error.message || "The request could not be completed."
+      }, 500, headers);
+    }
+  }
+};
+
+function corsHeaders(origin, env) {
+  const allowedOrigin = String(
+    env.ALLOWED_ORIGIN || "https://furdeco.github.io"
+  ).replace(/\/$/, "");
+
+  const headers = {
+    "Content-Type": "application/json; charset=utf-8",
+    "Cache-Control": "no-store",
+    "X-Content-Type-Options": "nosniff",
+    "Vary": "Origin",
+    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
+    "Access-Control-Max-Age": "86400"
+  };
+
+  if (origin.replace(/\/$/, "") === allowedOrigin) {
+    headers["Access-Control-Allow-Origin"] = allowedOrigin;
+  }
+
+  return headers;
+}
+
+function json(data, status, headers) {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers
+  });
+}
+
+async function readJson(request) {
+  const contentType = request.headers.get("Content-Type") || "";
+
+  if (!contentType.toLowerCase().includes("application/json")) {
+    throw new SyntaxError("JSON content type is required.");
+  }
+
+  return request.json();
+}
+
+function githubConfig(env) {
+  const owner = env.GITHUB_OWNER || "furdeco";
+  const repo = env.GITHUB_REPO || "UpdateCentre";
+  const branch = env.GITHUB_BRANCH || "main";
+  const path = env.GITHUB_FILE_PATH || "updates.json";
+
+  if (!env.GITHUB_TOKEN) {
+    throw new Error("Missing GITHUB_TOKEN secret.");
+  }
+
+  return { owner, repo, branch, path };
+}
+
+async function githubRequest(url, env, options = {}) {
+  const response = await fetch(url, {
+    ...options,
+    headers: {
+      "Accept": "application/vnd.github+json",
+      "Authorization": `Bearer ${env.GITHUB_TOKEN}`,
+      "X-GitHub-Api-Version": "2022-11-28",
+      "User-Agent": "Furdeco-Update-Centre",
+      ...(options.headers || {})
+    }
+  });
+
+  if (!response.ok) {
+    const details = await response.text();
+    console.error("GitHub API error:", response.status, details);
+
+    if (response.status === 404) {
+      throw new Error(
+        "GitHub file or repository not found. Check repository settings and updates.json."
+      );
+    }
+
+    if (response.status === 409 || response.status === 422) {
+      throw new Error(
+        "GitHub could not save the update. The file may have changed; reload and try again."
+      );
+    }
+
+    if (response.status === 401 || response.status === 403) {
+      throw new Error(
+        "GitHub rejected the token. Check GITHUB_TOKEN and its repository Contents permissions."
+      );
+    }
+
+    throw new Error(`GitHub API request failed (${response.status}).`);
+  }
+
+  return response.json();
+}
+
+async function getFile(env) {
+  const { owner, repo, branch, path } = githubConfig(env);
+
+  const url = new URL(
+    `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/contents/${path.split("/").map(encodeURIComponent).join("/")}`
+  );
+
+  url.searchParams.set("ref", branch);
+
+  return githubRequest(url.toString(), env);
+}
+
+async function readUpdates(env) {
+  const file = await getFile(env);
+
+  if (!file.content) {
+    throw new Error("GitHub returned an empty file response.");
+  }
+
+  const binary = atob(file.content.replace(/\s/g, ""));
+  const bytes = Uint8Array.from(binary, char => char.charCodeAt(0));
+  const content = new TextDecoder().decode(bytes);
+  const updates = JSON.parse(content);
+
+  if (!Array.isArray(updates)) {
+    throw new Error("updates.json must contain a JSON array.");
+  }
+
+  return updates;
+}
+
+async function writeUpdates(env, updates) {
+  const { owner, repo, branch, path } = githubConfig(env);
+
+  // Retrieve the current SHA so GitHub can update the existing file.
+  let sha;
+
+  try {
+    const file = await getFile(env);
+    sha = file.sha;
+  } catch (error) {
+    // Do not silently create a replacement if the file is missing.
+    throw new Error(
+      "Could not retrieve updates.json before saving. Check that the file exists and is accessible."
+    );
+  }
+
+  const content = btoa(
+    Array.from(
+      new TextEncoder().encode(JSON.stringify(updates, null, 2)),
+      byte => String.fromCharCode(byte)
+    ).join("")
+  );
+
+  const url =
+    `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/contents/${path.split("/").map(encodeURIComponent).join("/")}`;
+
+  await githubRequest(url, env, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      message: "Publish update via Furdeco Update Centre",
+      content,
+      sha,
+      branch
+    })
+  });
+}
+
+async function createToken(secret) {
+  const payload = {
+    role: "admin",
+    exp: Math.floor(Date.now() / 1000) + TOKEN_TTL_SECONDS
+  };
+
+  const encoded = base64url(
+    new TextEncoder().encode(JSON.stringify(payload))
+  );
+
+  return `${encoded}.${await sign(encoded, secret)}`;
+}
+
+async function verifyToken(token, secret) {
+  if (!secret || !token) return false;
+
+  const parts = token.split(".");
+  if (parts.length !== 2) return false;
+
+  const expected = await sign(parts[0], secret);
+
+  if (!safeEqual(parts[1], expected)) return false;
+
+  try {
+    const payload = JSON.parse(
+      new TextDecoder().decode(fromBase64url(parts[0]))
+    );
+
+    return payload.role === "admin" &&
+      Number(payload.exp) > Math.floor(Date.now() / 1000);
+  } catch {
+    return false;
+  }
+}
+
+async function sign(value, secret) {
+  const key = await crypto.subtle.importKey(
+    "raw",
+    new TextEncoder().encode(secret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"]
+  );
+
+  const signature = await crypto.subtle.sign(
+    "HMAC",
+    key,
+    new TextEncoder().encode(value)
+  );
+
+  return base64url(new Uint8Array(signature));
+}
+
+function base64url(bytes) {
+  let binary = "";
+
+  for (const byte of bytes) {
+    binary += String.fromCharCode(byte);
+  }
+
+  return btoa(binary)
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=+$/g, "");
+}
+
+function fromBase64url(value) {
+  const normalized = value.replace(/-/g, "+").replace(/_/g, "/");
+  const padded = normalized + "=".repeat((4 - normalized.length % 4) % 4);
+  const binary = atob(padded);
+
+  return Uint8Array.from(binary, char => char.charCodeAt(0));
+}
+
+function safeEqual(a, b) {
+  if (a.length !== b.length) return false;
+
+  let result = 0;
+
+  for (let i = 0; i < a.length; i++) {
+    result |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  }
+
+  return result === 0;
+}
