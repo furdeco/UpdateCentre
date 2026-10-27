@@ -1,0 +1,106 @@
+name: Sync published Update Centre sheet
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '*/5 * * * *'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-zoho-sheet
+  cancel-in-progress: true
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install Python dependencies
+        run: python -m pip install openpyxl
+      - name: Download published Zoho Sheet XLSX
+        env:
+          ZOHO_XLSX_URL: https://sheet.zohopublic.in/sheet/published/dgklm0af687d826af43d683efc73741ee946b?download=xlsx
+        run: |
+          # curl handles Zoho's HTTP 307 redirects differently from Python urllib.
+          # Use a normal browser User-Agent and record the final response for diagnosis.
+          curl --fail --silent --show-error --location \
+            --max-redirs 20 \
+            --retry 2 --retry-delay 2 \
+            --user-agent 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36' \
+            --header 'Accept: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/octet-stream,*/*' \
+            --output sheet.xlsx \
+            --write-out 'Final HTTP status: %{http_code}\nFinal URL: %{url_effective}\nDownloaded bytes: %{size_download}\n' \
+            "$ZOHO_XLSX_URL"
+          python - <<'PY'
+          import io, json
+          from pathlib import Path
+          from openpyxl import load_workbook
+
+          path = Path('sheet.xlsx')
+          data = path.read_bytes()
+          if not data or not data.startswith(b'PK'):
+              raise SystemExit(f'Zoho download is not a valid XLSX file (first bytes: {data[:24]!r}; size: {len(data)}).')
+          workbook = load_workbook(io.BytesIO(data), read_only=True, data_only=True)
+          sheet = workbook[workbook.sheetnames[0]]
+          rows = [[('' if cell is None else str(cell).strip()) for cell in row] for row in sheet.iter_rows(values_only=True)]
+          while rows and not any(rows[-1]):
+              rows.pop()
+          if len(rows) < 2:
+              raise SystemExit('The published worksheet is empty or contains only a header row.')
+          raw_headers = rows[0]
+          headers = []
+          for index, value in enumerate(raw_headers):
+              name = value.strip() or f'Column {index + 1}'
+              base, suffix = name, 2
+              while name in headers:
+                  name = f'{base}_{suffix}'
+                  suffix += 1
+              headers.append(name)
+          records = []
+          for row in rows[1:]:
+              row = row + [''] * (len(headers) - len(row))
+              record = {headers[i]: (row[i] if i < len(row) else '') for i in range(len(headers))}
+              if any(str(value).strip() for value in record.values()):
+                  records.append(record)
+          if not records:
+              raise SystemExit('No non-empty data rows were found in the first worksheet.')
+          with open('updates.json', 'w', encoding='utf-8') as output:
+              json.dump(records, output, ensure_ascii=False, indent=2)
+              output.write('\n')
+          print(f'Synced {len(records)} records from worksheet {sheet.title!r} to updates.json.')
+          PY
+      - name: Validate generated JSON
+        run: |
+          test -s updates.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          path = Path('updates.json')
+          data = json.loads(path.read_text(encoding='utf-8'))
+          if not isinstance(data, list) or not data:
+              raise SystemExit('updates.json must contain a non-empty JSON array.')
+          print(f'Validated {len(data)} records; updates.json is {path.stat().st_size} bytes.')
+          print('First record keys:', ', '.join(data[0].keys()))
+          PY
+      - name: Commit updated JSON if changed
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          # Force-add also handles a repository .gitignore rule that might hide this new file.
+          git add -f updates.json
+          if git diff --cached --quiet -- updates.json; then
+            echo 'updates.json is already committed and unchanged.'
+          else
+            git commit -m 'Sync latest updates from published Zoho Sheet'
+            git push
+            echo 'Committed and pushed updates.json.'
+          fi
+          echo 'Final tracked file status:'
+          git ls-files --stage -- updates.json
